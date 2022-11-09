@@ -1,0 +1,36 @@
+version: "3.7"
+
+volumes:
+  localvolume:
+    name: "localvolume"
+    driver: "local"
+
+networks:
+  dev_network:
+    driver: bridge
+services:
+  neo4j:
+    image: neo4j:latest
+    hostname: neo4j
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./neo4j/plugins:/plugins
+    env_file:
+      - .env.neo4j
+
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: "db"
+      #MONGO_INITDB_ROOT_USERNAME: "root"
+      #MONGO_INITDB_ROOT_PASSWORD: "myBigDevPassword!"
+
+    ports:
+      - 27017:27017
+    volumes:
+      - localvolume:/data/db
+    networks:
+      - dev_network
